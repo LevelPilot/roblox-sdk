@@ -1,0 +1,12 @@
+{
+  "name": "raiblax-analytics",
+  "tree": {
+    "$className": "DataModel",
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "RaiblaxAnalytics": {
+        "$path": "src"
+      }
+    }
+  }
+}

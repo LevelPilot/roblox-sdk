@@ -1,0 +1,7 @@
+.env
+.env.*
+!.env.example
+generated/
+*.rbxlx
+*.rbxl
+.DS_Store
