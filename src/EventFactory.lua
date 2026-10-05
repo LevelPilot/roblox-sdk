@@ -15,7 +15,8 @@ function EventFactory.create(eventName: string, properties: Types.Properties?): 
 	return {
 		eventName = eventName,
 		occurredAt = os.date("!%Y-%m-%dT%H:%M:%SZ"),
-		properties = properties or {},
+		-- Empty Luau tables encode as JSON arrays; omit the optional field instead.
+		properties = if properties and next(properties) ~= nil then properties else nil,
 		context = {
 			gameId = game.GameId,
 			placeId = game.PlaceId,

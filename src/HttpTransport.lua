@@ -97,17 +97,17 @@ end
 
 function HttpTransport.send(config: Types.NormalizedConfig, sessionToken: string, event: Types.AnalyticsEvent): Types.DeliveryResult
 	local encodedBody: string
-	local encoded, encodeError = pcall(function()
+	local encodeOk, bodyOrError = pcall(function()
 		return HttpService:JSONEncode(event)
 	end)
 
-	if not encoded then
+	if not encodeOk then
 		return {
 			success = false,
 			errorCode = "invalid_event_payload",
 		}
 	end
-	encodedBody = encoded
+	encodedBody = bodyOrError
 
 	local requestOk, responseOrError = request(config.endpoint, {
 		["Content-Type"] = "application/json",
@@ -115,6 +115,12 @@ function HttpTransport.send(config: Types.NormalizedConfig, sessionToken: string
 	}, encodedBody)
 
 	if not requestOk then
+		if config.debug then
+			-- Redact the active credential; never log headers, payloads or response bodies.
+			local tokenPattern = string.gsub(sessionToken, "(%W)", "%%%1")
+			local detail = string.gsub(tostring(responseOrError), tokenPattern, "[REDACTED]")
+			warn("[Raiblax SDK] Event RequestAsync failed: " .. detail)
+		end
 		return {
 			success = false,
 			errorCode = "request_failed",
@@ -122,7 +128,22 @@ function HttpTransport.send(config: Types.NormalizedConfig, sessionToken: string
 	end
 
 	local response = responseOrError
+	if config.debug then
+		print("[Raiblax SDK] Event HTTP status: " .. tostring(response.StatusCode) .. "; success: " .. tostring(response.Success))
+	end
 	if not response.Success then
+		if config.debug then
+			local decoded, payload = pcall(function()
+				return HttpService:JSONDecode(response.Body)
+			end)
+			if decoded and type(payload) == "table" and type(payload.error) == "string" then
+				local tokenPattern = string.gsub(sessionToken, "(%W)", "%%%1")
+				local detail = string.gsub(payload.error, tokenPattern, "[REDACTED]")
+				warn("[Raiblax SDK] API rejected event: " .. detail)
+			else
+				warn("[Raiblax SDK] API rejected event without a JSON error message.")
+			end
+		end
 		return {
 			success = false,
 			statusCode = response.StatusCode,

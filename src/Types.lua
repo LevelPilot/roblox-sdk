@@ -25,7 +25,7 @@ export type NormalizedConfig = {
 export type AnalyticsEvent = {
 	eventName: string,
 	occurredAt: string,
-	properties: Properties,
+	properties: Properties?,
 	context: {
 		gameId: number,
 		placeId: number,

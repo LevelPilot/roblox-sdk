@@ -20,7 +20,7 @@ Analytics.init({
 | `endpoint` | `https://api.raiblax.com/v1/events` | HTTPS ingestion endpoint. Use a custom endpoint for staging only. |
 | `handshakeEndpoint` | `https://api.raiblax.com/api/v1/sdk/handshake` | HTTPS endpoint that exchanges the Secret Store key for a server-only session token. |
 | `allowInsecureHttp` | `false` | Allows `http://localhost:<port>/...` only for local Studio testing. Never enable this for a published experience. |
-| `debug` | `false` | Reserved for future non-sensitive diagnostics. |
+| `debug` | `false` | Logs event HTTP status and transport errors with the active session token redacted; also logs the JSON `error` field on API rejection. Headers, event payloads and full response bodies are omitted. |
 | `autoFlush` | `true` | Immediately sends every tracked event. Set it to `false` to control delivery with `flush()`. |
 
 ## Controlled flushing

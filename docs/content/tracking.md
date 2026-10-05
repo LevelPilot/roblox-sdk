@@ -26,6 +26,8 @@ Analytics.track("level-completed")
 
 ## Properties
 
+Omitted or empty properties are excluded from the JSON payload, allowing the API to default to an empty object instead of receiving a JSON array. Non-empty properties are preserved.
+
 Properties must be JSON-compatible values. Keep their schema stable over time so they can be aggregated reliably.
 
 ```lua
